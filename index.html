@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finite State Machine</title>
+  <script src="math.js"></script>
+  <script src="canvas.js"></script>
+  <script src="gameobj.js"></script>
+  <script src="fsm.js"></script>
+  <script src="unit.js"></script>
+  <script src="player.js"></script>
+  <script src="gem.js"></script>
+  <script src="bullet.js"></script>
+  <script src="game.js"></script>
+  <style type="text/css">
+    body { text-align: center; font-family: Tahoma }
+    canvas { border-radius: 10px; background: rgb(100,100,100); }
+  </style>
+</head>
+<body onload="Game.init('canvas')">
+  <img src="./mef.png" width="450">
+  <canvas id="canvas" width="500" height="500"></canvas>
+  <div>
+    <button onclick="Game.start()">Executa</button>
+    <button onclick="Game.stop()">Pausa</button>
+    <button onclick="Game.init()">Reinicia</button>
+  </div>
+</body>
+</html>
