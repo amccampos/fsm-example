@@ -18,4 +18,6 @@ node build
 ```
 ...e depois recarregue o `index.html`
 
-No "jogo", você (usuário) controla o personagem verde e a IA controla o personagem azul, fazendo-o proteger a "joia" do jogador.
+No "jogo", você (usuário) controla o personagem verde e a IA controla o personagem azul, fazendo-o proteger a "joia" do jogador. A imagem abaixo mostra a máquina de estado implementada (o ponto preto indica o estado inicial).
+
+![MEF](./dist/mef.png)
