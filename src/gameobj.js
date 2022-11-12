@@ -1,10 +1,9 @@
 
 /** Super-classe dos objetos que deve ser atualizados ou desenhados no jogo. */
-class GameObject {
-  static objs = [] // objetos do jogo
-  static reset() { GameObject.objs = [] } // reinicia os objs do jogo
+export class GameObject {
 
-  constructor(type, x, y, dir = 0, size = 10, speed = 5) {
+  constructor(game, type, x, y, dir = 0, size = 10, speed = 5) {
+    this.game = game
     this.type = type
     this.x = x
     this.y = y
@@ -13,11 +12,14 @@ class GameObject {
     this.speed = speed
 
     // sempre que um GameObject for criado, ele é adicionado aos objs do jogo
-    GameObject.objs.push(this)
+    this.game.addGameObj(this)
   }
 
   /** Por padrão, não faz nada. */
   update() { }
+
+  /** Por padrão, não desenha nada. */
+  draw() { }
 
   /** Verifica se um ponto encontra-se em sua área. */
   inBoundingBox(x, y) {
@@ -29,8 +31,8 @@ class GameObject {
     )
   }
 
-  /** Remove a si mesmo do conjunto de ojetos do jogo. */
+  /** Remove-se do conjunto de ojetos do jogo. */
   destroy() {
-    GameObject.objs = GameObject.objs.filter(obj => obj !== this)
+    this.game.removeGameObj(this)
   }
 }

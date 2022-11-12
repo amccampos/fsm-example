@@ -1,6 +1,6 @@
 
 /** Estado de uma máquina de estado finito. */
-class State {
+export class State {
   constructor(action, entryAction, exitAction) {
     this.action = action           // ação executada enquanto estiver no estado
     this.entryAction = entryAction // ação executada no momento que entrar no estado
@@ -8,7 +8,7 @@ class State {
   }
 }
 
-class Transition {
+export class Transition {
   constructor(from, to, condition, action) {
     this.from = from            // estado da unidade em que a transição é testada
     this.to = to                // estado para o qual a unidade vai mudar
@@ -17,8 +17,7 @@ class Transition {
   }
 }
 
-
-class FiniteStateMachine {
+export class FiniteStateMachine {
 
   constructor(initialState, transitions = []) {
     this.state = initialState

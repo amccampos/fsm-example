@@ -1,0 +1,13 @@
+{
+  "name": "fsm-example",
+  "version": "1.0.0",
+  "license": "ISC",
+  "main": "index.js",
+  "scripts": {
+    "dev": "",
+    "build": "esbuild src/main.js --bundle --minify --outdir=dist --sourcemap"
+  },
+  "devDependencies": {
+    "esbuild": "^0.14.11"
+  }
+}

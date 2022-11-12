@@ -1,9 +1,11 @@
+import { GameObject } from './gameobj'
+import { Bullet } from './bullet'
+import { projectPoint, DegToRad } from './math'
 
-class Player extends GameObject {
+export class Player extends GameObject {
 
-  constructor(x, y, dir) {
-    super('player', x, y, dir)
-    this.fill = 'rgb(36, 153, 72)'
+  constructor(game, x, y, dir) {
+    super(game, 'player', x, y, dir)
     this.onLeft = false
     this.onRight = false
     this.onForward = false
@@ -51,7 +53,7 @@ class Player extends GameObject {
   /** Segue em frente. */
   moveForward() {
     const [x, y] = projectPoint(this.x, this.y, this.dir, this.speed)
-    if (!Game.canvas.isOutside(x, y)) {
+    if (!this.game.canvas.isOutside(x, y)) {
       this.x = x
       this.y = y
     }
@@ -70,7 +72,19 @@ class Player extends GameObject {
   /** Dispara uma bala. */
   fire() {
     const [x, y] = projectPoint(this.x, this.y, this.dir, this.size + 5)
-    new Bullet(x, y, this.dir)
+    new Bullet(this.game, x, y, this.dir)
+  }
+
+  draw() {
+    const ctx = this.game.canvas.context2d
+    ctx.fillStyle = 'rgb(36, 153, 72)'
+    ctx.strokeStyle = 'rgb(255, 255, 255)'
+    ctx.beginPath()
+    ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI)
+    ctx.fill()
+    ctx.moveTo(this.x, this.y)
+    ctx.lineTo(this.x + this.size * Math.cos(this.dir), this.y + this.size * Math.sin(this.dir))
+    ctx.stroke()
   }
 
 }

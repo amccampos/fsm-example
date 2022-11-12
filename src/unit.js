@@ -1,24 +1,29 @@
+import { GameObject } from './gameobj'
+import { State, Transition, FiniteStateMachine } from './fsm'
+import { calcAngleToTarget, DegToRad, distance, projectPoint } from './math'
 
-class Unit extends GameObject {
-  constructor(x, y, dir) {
-    super('unit', x, y, dir)
-    this.fill = 'rgb(36, 45, 153)'
+export class Unit extends GameObject {
+  constructor(game, x, y, dir) {
+    super(game, 'unit', x, y, dir)
 
-    const g = Game.gem
+    this.precious = this.game.objs.find(obj => obj.type === 'gem')
+    this.enemy = this.game.objs.find(obj => obj.type === 'player')
+    
+    // define os pontos de patrulho ao seu redor
     this.patrolPoints = [
-      { x: g.x - 50, y: g.y - 50 },
-      { x: g.x + 50, y: g.y - 50 },
-      { x: g.x + 50, y: g.y + 50 },
-      { x: g.x - 50, y: g.y + 50 },
+      { x: this.precious.x - 50, y: this.precious.y - 50 },
+      { x: this.precious.x + 50, y: this.precious.y - 50 },
+      { x: this.precious.x + 50, y: this.precious.y + 50 },
+      { x: this.precious.x - 50, y: this.precious.y + 50 },
     ]
     this.currentPoint = 0
 
-    this.initConditionBasedFSM()
-    // this.initMatrixBasedFSM()
+    // this.initConditionBasedFSM()
+    this.initMatrixBasedFSM()
     // this.initObjectBasedFSM()
   }
 
-  // --- AÇÕES  ---
+  // --- AÇÕES  ---------------------------------------------
 
   /** Gira em direção ao ponto de patrulha atual. */
   turnToPoint() {
@@ -29,7 +34,7 @@ class Unit extends GameObject {
   /** Anda um pouco para frente (em função de sua direção e velocidade) */
   moveForward() {
     const [x, y] = projectPoint(this.x, this.y, this.dir, this.speed)
-    if (!Game.canvas.isOutside(x, y)) {
+    if (!this.game.canvas.isOutside(x, y)) {
       this.x = x
       this.y = y
     }
@@ -37,11 +42,11 @@ class Unit extends GameObject {
 
   /** Gira em direção ao jogador e anda para frente. */
   chasePlayer() {
-    this.turnTo(Game.player.x, Game.player.y)
+    this.turnTo(this.enemy.x, this.enemy.y)
     this.moveForward()
   }
 
-  // --- UPDATES ---
+  // --- UPDATES --------------------------------------------------------
 
   initConditionBasedFSM() {
     this.state = 'turnToPoint'
@@ -97,22 +102,22 @@ class Unit extends GameObject {
     this.states =      [ this.turnToPoint, this.moveForward, this.chasePlayer ]
     this.entryAction = [ this.nextPoint,   null,             null             ]
     // this.exitActions = [ ... ]
-    this.transitions = [  /* turnToPoint              moveToPoint         chasePlayer              */
-         /* turnToPoint */ [ null,                    this.isFacingPoint, this.isPlayerCloseToGem ],
-         /* moveToPoint */ [ this.isOverPoint,        null,               this.isPlayerCloseToGem ],
-         /* chasePlayer */ [ this.isPlayerFarFromGem, null,               null                    ],
-    ]
+    
+    // this.transitions = [  /* turnToPoint              moveToPoint         chasePlayer              */
+    //      /* turnToPoint */ [ null,                    this.isFacingPoint, this.isPlayerCloseToGem ],
+    //      /* moveToPoint */ [ this.isOverPoint,        null,               this.isPlayerCloseToGem ],
+    //      /* chasePlayer */ [ this.isPlayerFarFromGem, null,               null                    ],
+    // ]
     this.stateIndex = 0
     this.update = this.updateUsingMatrix
 
-    /* Alternativa
+    // Alternativa
     this.conditions = [ null, this.isFacingPoint, this.isPlayerCloseToGem, this.isPlayerFarFromGem, this.isOverPoint ]
     this.transitions = [
       [ 0, 1, 2 ],
       [ 4, 0, 2 ],
       [ 3, 0, 0 ],
     ]
-    */
   }
 
   updateUsingMatrix() {
@@ -122,10 +127,16 @@ class Unit extends GameObject {
 
     // verifica transições
     const transitions = this.transitions[this.stateIndex]
-    const newState = transitions.findIndex(t => t && t.apply(this))
+    const newState = transitions.findIndex(t => {
+      const condition = this.conditions[t]
+      return condition && condition.apply(this)
+    })
+    // se houve a transição
     if (newState >= 0) {
       const entry = this.entryAction[newState]
-      entry && entry.apply(this)
+      if (entry) {
+        entry.apply(this)
+      }
       this.stateIndex = newState
     }
   }
@@ -143,7 +154,7 @@ class Unit extends GameObject {
     const t4 = new Transition(moveToPoint, chasePlayer, this.isPlayerCloseToGem)
     const t5 = new Transition(chasePlayer, turnToPoint, this.isPlayerFarFromGem)
 
-    this.fsm = new FiniteStateMachine( turnToPoint, [ t1, t2, t3, t4, t5 ])
+    this.fsm = new FiniteStateMachine(turnToPoint, [ t1, t2, t3, t4, t5 ])
     this.update = this.updateUsingObjects
   }
 
@@ -176,7 +187,7 @@ class Unit extends GameObject {
 
   /** Verifica se o jogador está próximo à joia. */
   isPlayerCloseToGem() {
-    const d = distance(Game.player.x, Game.player.y, Game.gem.x, Game.gem.y)
+    const d = distance(this.enemy.x, this.enemy.y, this.precious.x, this.precious.y)
     return d < 200
   }
 
@@ -191,4 +202,15 @@ class Unit extends GameObject {
     return distance(this.x, this.y, p.x, p.y) < this.speed
   }
 
+  draw() {
+    const ctx = this.game.canvas.context2d
+    ctx.fillStyle = 'rgb(36, 45, 153)'
+    ctx.strokeStyle = 'rgb(255, 255, 255)'
+    ctx.beginPath()
+    ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI)
+    ctx.fill()
+    ctx.moveTo(this.x, this.y)
+    ctx.lineTo(this.x + this.size * Math.cos(this.dir), this.y + this.size * Math.sin(this.dir))
+    ctx.stroke()
+  }
 }
