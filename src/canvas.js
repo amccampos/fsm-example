@@ -24,17 +24,4 @@ export class Canvas {
     return x < 0 || y < 0 || x > this.htmlCanvas.width || y > this.htmlCanvas.height
   }
 
-  /** Desenha um objeto do jogo (idealmente este método deveria estar no obj) */
-  draw(gameobj) {
-    this.context2d.fillStyle = gameobj.fill || 'rgb(40, 40, 120)'
-    this.context2d.strokeStyle = gameobj.stroke || 'rgb(255, 255, 255)'
-    this.context2d.beginPath()
-    this.context2d.arc(gameobj.x, gameobj.y, gameobj.size, 0, 2 * Math.PI)
-    this.context2d.fill()
-    if (gameobj.type === 'unit' || gameobj.type === 'player') {
-      this.context2d.moveTo(gameobj.x, gameobj.y)
-      this.context2d.lineTo(gameobj.x + gameobj.size * Math.cos(gameobj.dir), gameobj.y + gameobj.size * Math.sin(gameobj.dir))
-      this.context2d.stroke()
-    }
-  }
 }
