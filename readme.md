@@ -18,6 +18,6 @@ node build
 ```
 ...e depois recarregue o `index.html`
 
-No "jogo", você (jogador) controla o personagem verde usando as teclas W (cima), A (esquerda), D (direita) e ' ' (tiro), enquanto a IA controla o personagem azul, fazendo-o proteger a "joia" do jogador. A imagem abaixo mostra a máquina de estado implementada (o ponto preto indica o estado inicial).
+No "jogo", você (jogador) controla o personagem verde usando as teclas W (ir em frente), A (girar à esquerda), D (girar à direita) e ' ' (tiro), enquanto a IA controla o personagem azul, fazendo-o proteger a "joia" do jogador. A imagem abaixo mostra a máquina de estado implementada (o ponto preto indica o estado inicial).
 
 ![MEF](./dist/mef.png)
