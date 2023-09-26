@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finite State Machine</title>
+  <script type="module" src="./src/main.js"></script>
+  <style type="text/css">
+    body { padding: 10px; display: flex; justify-content: space-evenly; }
+    canvas { border-radius: 10px; background: rgb(100,100,100); }
+    p { margin: 0; text-align: center; font-family: Tahoma; }
+  </style>
+</head>
+<body>
+  <div>
+    <p>Máquina de Estado Hierárquica</p>
+    <img src="./imgs/mefh.png">
+  </div>
+  <div>
+    <canvas id="canvas" width="500" height="500"></canvas>
+    <div>
+      <button id="start_btn">Executa</button>
+      <button id="pause_btn">Pausa</button>
+      <button id="reset_btn">Reinicia</button>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,23 +1,9 @@
-# Exemplo de implementação de uma Máquina de Estados
+# Exemplo de implementação de uma Máquina de Estados Hierárquica
 
-Este código tem como objetivo ilustrar 3 formas de implementar uma máquina de estados:
-1. usando condicionais (switch, if)
-2. usando uma matriz de transição
-3. usando objetos
+Este código tem como objetivo ilustrar uma forma de implementar uma máquina de estados hierárquica. No exemplo, há também um gerenciador de eventos, tratados como mensagens disparadas e processadas pelos NPCs.
 
-O construtor da classe Unit (em `unit.js`) chama um método específico para a forma de implementação:
-* initConditionBasedFSM()
-* initMatrixBasedFSM()
-* initObjectBasedFSM()
+Para testar, basta carregar o arquivo `index.html` (por exemplo, no live-server no vscode).
 
-Escolha qual quer testar e comente os demais.
+No "jogo", você (jogador) controla o personagem verde usando as teclas W (ir em frente), A (girar à esquerda), D (girar à direita) e ' ' (tiro), enquanto a IA controla os personagens azuis, fazendo-os proteger suas "joias". A imagem abaixo mostra a máquina hierárquica implementada (o ponto preto indica o estado inicial).
 
-Para testar as modificações, execute:
-```sh
-node build
-```
-...e depois recarregue o `index.html`
-
-No "jogo", você (jogador) controla o personagem verde usando as teclas W (ir em frente), A (girar à esquerda), D (girar à direita) e ' ' (tiro), enquanto a IA controla o personagem azul, fazendo-o proteger a "joia" do jogador. A imagem abaixo mostra a máquina de estado implementada (o ponto preto indica o estado inicial).
-
-![MEF](./dist/mef.png)
+![MEF](./dist/mefh.png)

@@ -1,57 +1,81 @@
-import { Canvas } from './canvas'
-import { GameObject } from './gameobj'
-import { Gem } from './gem'
-import { Player } from './player'
-import { Unit } from './unit'
-import { randomIntRange, randomFloatRange } from './math'
+import { Canvas } from './canvas.js'
+import { gameObjPool } from './gameobjpool.js'
+import { Gem } from './gem.js'
+import { Player } from './player.js'
+import { Guardian } from './guardian.js'
+import { messageManager } from './fsm/msg-manager.js'
 
-export class Game {
+let canvas
+let interval
 
-  constructor(canvasId) {
-    this.canvas = new Canvas(canvasId || 'canvas')
-    this.objs = []
+/** Classe representando o jogo. */
+class Game {
+  get canvas() { return canvas }
+  
+  /** associa o elemento html com id `canvasId` ao canvas do jogo. */
+  createCanvas(canvasId) {
+    canvas = new Canvas(canvasId)
     this.reset()
   }
 
-  /** A cada iteração do jogo */
+  /** A cada iteração do jogo. */
   tick() {
-    this.canvas.clear()
-    this.objs.forEach(item => {
-      item.update()
-      item.draw()
-    })
+    this.update() // atualiza os objetos do jogo
+    this.draw()   // e desenha-os
   }
 
-  reset() {
-    const rndX = limit => randomIntRange(this.canvas.width() - limit, limit)
-    const rndY = limit => randomIntRange(this.canvas.height() - limit, limit)
-
-    this.canvas.clear()
-    this.objs = []
-    
-    new Gem(this, rndX(50), rndY(50))
-    new Player(this, rndX(50), rndY(50))
-    new Unit(this, rndX(50), rndY(50), randomFloatRange(Math.PI, -Math.PI))
-    
-    this.objs.forEach(item => item.draw()) 
+  /** processa as mensagens (eventos) e atualiza os objetos. */
+  update() {
+    messageManager.process()
+    gameObjPool.objs.forEach(obj => obj.update()) 
   }
 
-  start() {
-    this.stop()
-    this.interval = setInterval(() => this.tick(), 30)
-  }
-
-  stop() {
-    if (this.interval) {
-      clearInterval(this.interval)
+  /** apaga a área de desenho e desenha novamente todos os objetos. */
+  draw() {
+    if (this.canvas) {
+      this.canvas.clear()
+      gameObjPool.objs.forEach(obj => obj.draw()) 
     }
   }
 
-  addGameObj(obj) {
-    this.objs.push(obj)
+  /** cria o cenário do jogo. */
+  init() {
+    gameObjPool.reset()
+    gameObjPool.add(new Player())
+
+    const yGem = this.canvas.height / 2
+    const xGem = this.canvas.width / 4
+
+    for(let numGems = 1; numGems <= 3; numGems++) {
+      const gem = new Gem(numGems * xGem, yGem)
+      const guardian = new Guardian(gem)
+      gameObjPool.add(gem)
+      gameObjPool.add(guardian)
+    }
+
+    gameObjPool.objs.forEach(obj => obj.init())
   }
 
-  removeGameObj(obj) {
-    this.objs = this.objs.filter(o => o !== obj)
+  /** Reinicia o jogo. */
+  reset() {
+    this.init()
+    this.draw()
+  }
+
+  /** Inicia o laço do jogo chamando a o método tick() num intervalo regular. */
+  start() {
+    const frameRate = 1000/30  // 30 frames por segundo
+    this.stop()
+    interval = setInterval(() => this.tick(), frameRate)
+  }
+
+  /** Para a atualização do jogo. */
+  stop() {
+    if (interval) {
+      clearInterval(interval)
+    }
   }
 }
+
+/** game é um objeto único que representa o jogo (singleton) */
+export const game = Object.freeze(new Game())

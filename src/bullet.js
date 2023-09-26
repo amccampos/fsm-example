@@ -1,24 +1,27 @@
-import { GameObject } from "./gameobj"
+import { Message, MessageType, messageManager } from "./fsm/msg-manager.js"
+import { game } from "./game.js"
+import { GameObject, GameObjectType } from "./gameobj.js"
+import { gameObjPool } from "./gameobjpool.js"
 
+/** Bala disparada pelo jogador. */
 export class Bullet extends GameObject {
-  constructor(game, x, y, dir) {
-    super(game, 'bullet', x, y, dir, 2, 10)
+  constructor(x, y, dir) {
+    super(GameObjectType.Bullet, x, y, dir, 2, 10)
     this.fill = 'rgb(255, 255, 255)'
   }
 
   update() {
-    // atualiza a posição em função da direção
-    this.x += this.speed * Math.cos(this.dir)
-    this.y += this.speed * Math.sin(this.dir)
-
-    // se ficar fora da área do canvas, pode remover.
-    if (this.game.canvas.isOutside(this.x, this.y)) {
+    // se sair do mundo, pode se remover dele
+    if (!this.moveForward()) {
       this.destroy()
     }
 
-    // se bater em algum objeto, remove o objeto e a si mesmo.
-    this.game.objs.find(obj => {
+    // se bater em algum objeto, remove o objeto e a si mesmo... e cadastra uma mensagem informando que
+    // esse evento ocorreu.
+    gameObjPool.objs.find(obj => {
       if (obj !== this && obj.inBoundingBox(this.x, this.y)) {
+        const message = new Message(this, GameObjectType.Unit, MessageType.BulletHit)
+        messageManager.add(message)
         obj.destroy()
         this.destroy()
       }
@@ -26,7 +29,7 @@ export class Bullet extends GameObject {
   }
 
   draw() {
-    const ctx = this.game.canvas.context2d
+    const ctx = game.canvas.context2d
     ctx.fillStyle = 'rgb(255, 255, 255)'
     ctx.strokeStyle = 'rgb(255, 255, 255)'
     ctx.beginPath()

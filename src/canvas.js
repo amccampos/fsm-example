@@ -1,18 +1,19 @@
+/** Representa a área de desenho do jogo. */
 export class Canvas {
   
   /** Cria um novo canvas(js) associado a um canvas (html) cujo id é passado. */
   constructor(id) {
     this.htmlCanvas = document.getElementById(id)
-    if (this.htmlCanvas) {
-      this.context2d = this.htmlCanvas.getContext('2d')
-    }
+    if (!this.htmlCanvas) throw new Error(`Canvas id "${id}" not found!`)
+   
+    this.context2d = this.htmlCanvas.getContext('2d')
   }
 
   /** largura do canvas. */
-  width() { return this.htmlCanvas.width }
+  get width() { return this.htmlCanvas.width }
 
   /** altura do canvas. */
-  height() { return this.htmlCanvas.height }
+  get height() { return this.htmlCanvas.height }
 
   /** Apaga tudo que está no canvas. */
   clear() {
